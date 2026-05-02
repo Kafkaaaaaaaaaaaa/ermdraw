@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>Ermdraw 🎨</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet" onerror="this.remove()"/>
 <style>
   :root {
     --bg: #0c0c0e;
@@ -26,7 +26,7 @@
     height: 100%;
     background: var(--bg);
     color: var(--text);
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Outfit', system-ui, sans-serif;
     overflow: hidden;
   }
 
@@ -49,12 +49,13 @@
   }
 
   .logo {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Syne', system-ui, sans-serif;
     font-size: clamp(52px, 14vw, 96px);
     font-weight: 800;
     letter-spacing: -2px;
     line-height: 1;
-    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+    color: #7c6af7;
+    background: linear-gradient(135deg, #7c6af7 0%, #f76a8c 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -147,14 +148,11 @@
   .room-pill-label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; }
 
   .room-pill-code {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Syne', system-ui, sans-serif;
     font-size: 44px;
     font-weight: 800;
     letter-spacing: 6px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #7c6af7;
   }
 
   .dot-blink {
@@ -628,10 +626,16 @@ const ctx = canvas.getContext('2d');
 function resizeCanvas() {
   const wrapper = document.getElementById('canvasWrapper');
   const rect = wrapper.getBoundingClientRect();
+  if (rect.width === 0 || rect.height === 0) {
+    setTimeout(resizeCanvas, 150);
+    return;
+  }
   canvas.width = rect.width;
   canvas.height = rect.height;
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
+  ctx.fillStyle = '#f8f5f0';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
 window.addEventListener('resize', resizeCanvas);
@@ -732,7 +736,7 @@ function showScreen(id) {
   });
   const el = document.getElementById(id);
   el.classList.remove('hidden');
-  if (id === 'game') setTimeout(resizeCanvas, 50);
+  if (id === "game") { setTimeout(resizeCanvas, 50); setTimeout(resizeCanvas, 200); setTimeout(resizeCanvas, 500); }
 }
 
 function showToast(msg, dur = 2500) {
@@ -819,7 +823,10 @@ function handleMsg(msg) {
     case 'drawingStart':
       role = msg.role;
       showScreen('game');
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      setTimeout(() => {
+        ctx.fillStyle = '#f8f5f0';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }, 600);
       document.getElementById('chatLog').innerHTML = '';
 
       if (role === 'drawer') {
